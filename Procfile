@@ -1,1 +1,1 @@
-web: gunicorn BookColectionProject.wsgi
+web: gunicorn Book_Collection_Managment.wsgi
