@@ -16,8 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from BooksCollection.views import (
-    BookImport
-                                    )
+    book_import,
+    books_list_view
+            )
 from .views import (
     home
 )
@@ -25,6 +26,8 @@ from .views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home),
-    re_path(r'^Books/(?P<search_term>[a-z-]+)/$', BookImport)
+    re_path(r'^books/$', books_list_view),
+    re_path(r'^Books/(?P<search_term>[a-z-]+)/$', book_import),
+
 
 ]

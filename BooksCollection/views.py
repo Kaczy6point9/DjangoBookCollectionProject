@@ -1,11 +1,12 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator
 import requests
 from .models import (
     Book, Author, Category
 )
 
 # Create your views here.
-def BookImport(request, search_term):
+def book_import(request, search_term):
 
     api_url = 'https://www.googleapis.com/books/v1/volumes?q={}'.format(search_term)
     response = requests.get(api_url)
@@ -19,46 +20,32 @@ def BookImport(request, search_term):
         if qs.exists():
             continue
 
-        else:
+        obj_Book = Book()
+        obj_Book.book_title = book_title
+        obj_Book.save()
 
-            obj_Book = Book()
-            obj_Book.book_title = book_title
-            obj_Book.save()
+        for author_name in book['volumeInfo'].get("authors", []):
+            obj, _ = Author.objects.get_or_create(author_name=author_name)
+            obj_Book.book_authors.add(obj.id)
 
-            for author in book['volumeInfo']["authors"]:
-                author_name = author
-                qs = Author.objects.filter(author_name=author_name)
-                if qs.exists():
-                    id = Author.objects.only('id').get(author_name=author_name).id
-                    obj_Book.book_authors.add(id)
-                else:
-                    obj_Author = Author()
-                    obj_Author.author_name = author_name
-                    obj_Author.save()
-                    id = Author.objects.only('id').get(author_name=author_name).id
-                    obj_Book.book_authors.add(id)
+        for category_name in book['volumeInfo'].get('categories', []):
+            obj, _ = Category.objects.get_or_create(category_name=category_name)
+            obj_Book.book_categories.add(obj.id)
 
-            if 'categories' in book['volumeInfo'].keys():
-                for category in book['volumeInfo']['categories']:
-                    category_name = category
-                    qs = Category.objects.filter(category_name=category_name)
-                    if qs.exists():
-                        id = Category.objects.only('id').get(category_name=category_name).id
-                        obj_Book.book_categories.add(id)
-                    else:
-                        obj_Category = Category()
-                        obj_Category.category_name = category_name
-                        obj_Category.save()
-                        id = Category.objects.only('id').get(category_name=category_name).id
-                        obj_Book.book_categories.add(id)
-            else:
-                continue
+        if 'description' in book['volumeInfo'].keys():
+            Book.objects.filter(book_title=book_title).update(book_description=book['volumeInfo']['description'])
 
-            if 'description' in book['volumeInfo'].keys():
-                obj_Book.book_description = book['volumeInfo']['description']
-            else:
-                continue
-            obj_Book.save()
 
-    return render(request, "home.html")
+    return books_list_view(request)
+
+def books_list_view(request):
+    book_list = Book.objects.all()
+    paginator = Paginator(book_list, 10)
+    site_title = 'Books Collection'
+    template_name = 'books_collection_list.html'
+    page = request.GET.get('page')
+    books = paginator.get_page(page)
+    context = {'books_list': books, 'title': site_title}
+
+    return render(request, template_name, context)
 

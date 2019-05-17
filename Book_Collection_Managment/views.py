@@ -3,4 +3,6 @@ from django.shortcuts import render
 
 def home(request):
     site_title = 'Login Site'
-    return render(request, 'home.html', {'title': site_title})
+    template_name = 'home.html'
+    context = {'title': site_title}
+    return render(request, template_name, context)

@@ -23,3 +23,10 @@ class Book(models.Model):
 
     def __str__(self):
         return self.book_title
+
+    @property
+    def authors(self):
+        return ', '.join([author.author_name for author in self.book_authors.all()])
+
+    def categories(self):
+        return ', '.join([category.category_name for category in self.book_categories.all()])
