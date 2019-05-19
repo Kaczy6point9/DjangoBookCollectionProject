@@ -1,0 +1,4 @@
+<form method = 'POST' action = '?import' > {% csrf_token %}
+    {{ import_form.as_p }}
+    <button type="submit">Import</button>
+</form>

@@ -17,17 +17,19 @@ from django.contrib import admin
 from django.urls import path, re_path
 from BooksCollection.views import (
     book_import,
-    books_list_view
-            )
+    books_list_view,
+    book_import_view, create_book_view)
 from .views import (
     home
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home),
-    re_path(r'^books/$', books_list_view),
-    re_path(r'^Books/(?P<search_term>[a-z-]+)/$', book_import),
-
+    path('', books_list_view),
+    re_path(r'^books/?$', books_list_view),
+    re_path(r'^Books/(?P<search_term>[a-z-]+.*)/$', book_import),
+    re_path(r'^books/(?P<search_term>[a-z-]+.*)/$', book_import),
+    re_path(r'^books/import/?$', book_import_view),
+    re_path(r'^books/create/?$', create_book_view),
 
 ]
