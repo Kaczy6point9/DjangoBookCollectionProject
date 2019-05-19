@@ -27,8 +27,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', books_list_view),
     re_path(r'^books/?$', books_list_view),
-    re_path(r'^Books/(?P<search_term>[a-z-]+.*)/$', book_import),
-    re_path(r'^books/(?P<search_term>[a-z-]+.*)/$', book_import),
+    re_path(r'^Books/(?P<search_term>[A-Z-a-z]+.*)/$', book_import),
+    re_path(r'^books/(?P<search_term>[A-Z-a-z]+.*)/$', book_import),
     re_path(r'^books/import/?$', book_import_view),
     re_path(r'^books/create/?$', create_book_view),
 
